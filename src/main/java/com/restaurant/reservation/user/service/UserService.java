@@ -1,8 +1,11 @@
 package com.restaurant.reservation.user.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.restaurant.reservation.user.dto.LoginRequestDTO;
 import com.restaurant.reservation.user.dto.UserRequestDTO;
 import com.restaurant.reservation.user.model.Role;
 import com.restaurant.reservation.user.model.User;
@@ -51,5 +54,18 @@ public class UserService {
             throw new IllegalArgumentException(
                     "Password must be 6-24 chars, include upper, lower, digit and special character");
         }
+    }
+
+    public User login(LoginRequestDTO dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Invalid email or password");
+        }
+
+        user.setLastLoginAt(LocalDateTime.now());
+
+        return userRepository.save(user);
     }
 }
