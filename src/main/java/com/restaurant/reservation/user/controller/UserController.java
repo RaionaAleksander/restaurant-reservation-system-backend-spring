@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restaurant.reservation.user.dto.LoginRequestDTO;
 import com.restaurant.reservation.user.dto.UserRequestDTO;
 import com.restaurant.reservation.user.dto.UserResponseDTO;
 import com.restaurant.reservation.user.model.User;
@@ -24,6 +25,24 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRequestDTO dto) {
         User user = userService.register(dto);
+
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .createdAt(user.getCreatedAt())
+                .lastLoginAt(user.getLastLoginAt())
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+        User user = userService.login(dto);
 
         UserResponseDTO response = UserResponseDTO.builder()
                 .id(user.getId())
