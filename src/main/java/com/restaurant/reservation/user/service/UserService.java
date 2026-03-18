@@ -22,6 +22,8 @@ public class UserService {
             throw new IllegalArgumentException("Email already in use");
         }
 
+        validatePassword(dto.getPassword());
+
         User user = User.builder()
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
@@ -32,5 +34,22 @@ public class UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    private void validatePassword(String password) {
+        if (password == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+
+        String pattern = "^(?=.*[0-9])" +
+                "(?=.*[a-z])" +
+                "(?=.*[A-Z])" +
+                "(?=.*[@$!%*?&])" +
+                ".{6,24}$";
+
+        if (!password.matches(pattern)) {
+            throw new IllegalArgumentException(
+                    "Password must be 6-24 chars, include upper, lower, digit and special character");
+        }
     }
 }
