@@ -2,6 +2,13 @@ package com.restaurant.reservation.user.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserResponseDTO {
     private Long id;
     private String email;
