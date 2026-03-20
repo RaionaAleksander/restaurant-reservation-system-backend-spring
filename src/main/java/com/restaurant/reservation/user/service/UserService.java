@@ -13,12 +13,15 @@ import com.restaurant.reservation.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import com.restaurant.reservation.security.jwt.JwtService;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public User register(UserRequestDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -56,7 +59,7 @@ public class UserService {
         }
     }
 
-    public User login(LoginRequestDTO dto) {
+    public String login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
 
@@ -65,7 +68,8 @@ public class UserService {
         }
 
         user.setLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        return jwtService.generateToken(user);
     }
 }
