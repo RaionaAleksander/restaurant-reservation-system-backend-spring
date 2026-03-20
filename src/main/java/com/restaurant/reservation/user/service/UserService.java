@@ -23,7 +23,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public User register(UserRequestDTO dto) {
+    public String register(UserRequestDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already in use");
         }
@@ -39,7 +39,9 @@ public class UserService {
                 .role(Role.ROLE_CLIENT)
                 .build();
 
-        return userRepository.save(user);
+        user = userRepository.save(user);
+
+        return jwtService.generateToken(user);
     }
 
     private void validatePassword(String password) {
