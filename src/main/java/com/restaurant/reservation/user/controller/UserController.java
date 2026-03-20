@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restaurant.reservation.user.dto.AuthResponseDTO;
 import com.restaurant.reservation.user.dto.LoginRequestDTO;
 import com.restaurant.reservation.user.dto.UserRequestDTO;
 import com.restaurant.reservation.user.dto.UserResponseDTO;
@@ -41,20 +42,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
-        User user = userService.login(dto);
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
 
-        UserResponseDTO response = UserResponseDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phone(user.getPhone())
-                .createdAt(user.getCreatedAt())
-                .lastLoginAt(user.getLastLoginAt())
-                .build();
+        String token = userService.login(dto);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                AuthResponseDTO.builder()
+                        .token(token)
+                        .build());
     }
 }
