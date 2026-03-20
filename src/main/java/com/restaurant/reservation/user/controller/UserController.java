@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.restaurant.reservation.user.dto.AuthResponseDTO;
 import com.restaurant.reservation.user.dto.LoginRequestDTO;
 import com.restaurant.reservation.user.dto.UserRequestDTO;
-import com.restaurant.reservation.user.dto.UserResponseDTO;
-import com.restaurant.reservation.user.model.User;
 import com.restaurant.reservation.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -24,21 +22,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> register(@Valid @RequestBody UserRequestDTO dto) {
-        User user = userService.register(dto);
+    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody UserRequestDTO dto) {
+        String token = userService.register(dto);
 
-        UserResponseDTO response = UserResponseDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .phone(user.getPhone())
-                .createdAt(user.getCreatedAt())
-                .lastLoginAt(user.getLastLoginAt())
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(
+                AuthResponseDTO.builder()
+                        .token(token)
+                        .build());
     }
 
     @PostMapping("/login")
